@@ -70,11 +70,13 @@ with xr.open_dataset(args.nc) as ds: # Get the data
     for i in range(levels.size):
         for path in b.collections[i].get_paths():
             if path.vertices.shape[0] < 2: continue # Skip contour segments which are too short
-            gdf = gdf.append(gpd.GeoDataFrame(data={
+            df = gpd.GeoDataFrame(data={
                 "Depth": [levels[i]],
                 "geometry": LineString(path.vertices),
-                "crs": "EPSG:4326",
-                }))
+                },
+                crs = "EPSG:4326",
+                )
+            gdf = gdf.append(df)
     print("Took", time.time()-stime, "to make GDF")
 
 print(gdf)

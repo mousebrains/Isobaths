@@ -6,6 +6,7 @@
 
 from argparse import ArgumentParser
 import numpy as np
+import pandas as pd
 import xarray as xr
 import geopandas as gpd
 from shapely.geometry import LineString
@@ -53,6 +54,7 @@ else:
 
 gdf = gpd.GeoDataFrame()
 stime = time.time()
+items = []
 with xr.open_dataset(args.nc) as ds: # Get the data
     depth = -pruneData(ds.Band1, 
             "lat", args.latmin, args.latmax, "lon", args.lonmin, args.lonmax)
@@ -68,13 +70,11 @@ with xr.open_dataset(args.nc) as ds: # Get the data
 
     stime = time.time()
     for i in range(levels.size):
+        print(i, levels[i])
         for path in b.collections[i].get_paths():
             if path.vertices.shape[0] < 2: continue # Skip contour segments which are too short
-            gdf = gdf.append(gpd.GeoDataFrame(data={
-                "Depth": [levels[i]],
-                "geometry": LineString(path.vertices),
-                "crs": "EPSG:4326",
-                }))
+            df = gpd.GeoDataFrame(data={"Depth": [levels[i]], "geometry": LineString(path.vertices),}, crs="EPSG:4326")
+            gdf = gdf.append(df)
     print("Took", time.time()-stime, "to make GDF")
 
 print(gdf)
