@@ -19,7 +19,7 @@ def mkLevels(contours:tuple[str]) -> np.array:
     for contour in contours:
         for level in contour.split(","):
             try:
-                levels.append(float(level))
+                levels.append(int(level))
             except Exception as e:
                 print("Unable to convert", level, "to a floating point number")
                 print(str(e))
