@@ -52,9 +52,8 @@ if args.contour is None:
 else:
     levels = mkLevels(args.contour)
 
-gdf = gpd.GeoDataFrame()
 stime = time.time()
-items = []
+frames = []
 with xr.open_dataset(args.nc) as ds: # Get the data
     depth = -pruneData(ds.Band1, 
             "lat", args.latmin, args.latmax, "lon", args.lonmin, args.lonmax)
@@ -74,9 +73,10 @@ with xr.open_dataset(args.nc) as ds: # Get the data
         for path in b.collections[i].get_paths():
             if path.vertices.shape[0] < 2: continue # Skip contour segments which are too short
             df = gpd.GeoDataFrame(data={"Depth": [levels[i]], "geometry": LineString(path.vertices),}, crs="EPSG:4326")
-            gdf = gdf.append(df)
-    print("Took", time.time()-stime, "to make GDF")
+            frames.append(df)
+    print("Took", time.time()-stime, "to make", len(frames), "GDF frames")
 
+gdf = gpd.GeoDataFrame(pd.concat(frames, ignore_index=True))
 print(gdf)
 
 stime = time.time()
