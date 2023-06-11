@@ -6,6 +6,7 @@
 
 from argparse import ArgumentParser
 import numpy as np
+import pandas as pd
 import xarray as xr
 import geopandas as gpd
 from shapely.geometry import LineString
@@ -51,8 +52,8 @@ if args.contour is None:
 else:
     levels = mkLevels(args.contour)
 
-gdf = gpd.GeoDataFrame()
 stime = time.time()
+frames = []
 with xr.open_dataset(args.nc) as ds: # Get the data
     depth = -pruneData(ds.elevation, 
             "lat", args.latmin, args.latmax, "lon", args.lonmin, args.lonmax)
@@ -76,9 +77,10 @@ with xr.open_dataset(args.nc) as ds: # Get the data
                 },
                 crs = "EPSG:4326",
                 )
-            gdf = gdf.append(df)
-    print("Took", time.time()-stime, "to make GDF")
+            frames.append(df)
+    print("Took", time.time()-stime, "to make", len(frames), "GDF frames")
 
+gdf = gpd.GeoDataFrame(pd.concat(frames, ignore_index=True))
 print(gdf)
 
 stime = time.time()
