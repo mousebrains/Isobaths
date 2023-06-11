@@ -1,0 +1,39 @@
+#! /bin/bash
+#
+# Construct a shallow and deep set of Isobath files from the global GEBCO
+# data for work in Vietnam
+#
+# June-2023, Pat Welch, pat@mouebrains.com
+
+latMin=0
+latMax=26
+lonMin=99
+lonMax=124
+
+# plotit=--plot
+
+shpDir=shapefiles
+
+mkdir -p $shpDir
+
+./gebco.isobaths.py \
+	--nc=GEBCO_2023_sub_ice_topo.nc \
+	--shp=$shpDir/vietnam_deep.shp \
+	--latmin=$latMin \
+	--latmax=$latMax \
+	--lonmin=$lonMin \
+	--lonmax=$lonMax \
+	--contour=0,50,100,200,500,1000,1500,2000,2500 \
+	$plotit
+
+./gebco.isobaths.py \
+	--nc=GEBCO_2023_sub_ice_topo.nc \
+	--shp=$shpDir/vietnam_shallow.shp \
+	--latmin=$latMin \
+	--latmax=$latMax \
+	--lonmin=$lonMin \
+	--lonmax=$lonMax \
+	--contour=0,10,20,30,40,50,60,70,80,90,100 \
+	--contour=110,120,130,140,150,160,170,180,190,200 \
+	--contour=300,400,500,600,700,800,1000 \
+	$plotit
