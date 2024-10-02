@@ -58,6 +58,7 @@ with xr.open_dataset(args.nc) as ds: # Get the data
     depth = -pruneData(ds.elevation, 
             "lat", args.latmin, args.latmax, "lon", args.lonmin, args.lonmax)
     print("Took", time.time()-stime, "to select data")
+
     stime = time.time()
     b = xr.plot.contour(depth, levels=levels) # Make the contours
     print("Took", time.time()-stime, "to make contours")
@@ -68,16 +69,18 @@ with xr.open_dataset(args.nc) as ds: # Get the data
         plt.show()
 
     stime = time.time()
-    for i in range(levels.size):
-        for path in b.collections[i].get_paths():
-            if path.vertices.shape[0] < 2: continue # Skip contour segments which are too short
-            df = gpd.GeoDataFrame(data={
-                "Depth": [levels[i]],
-                "geometry": LineString(path.vertices),
-                },
-                crs = "EPSG:4326",
-                )
+    for index in range(b.levels.size):
+        level = int(round(b.levels[index]))
+        segs = b.allsegs[index]
+        print("Level", level, len(segs))
+        for seg in segs:
+            if seg.shape[0] == 0: continue
+            df = gpd.GeoDataFrame(
+                    data={"Depth": [level], "geometry": LineString(seg)},
+                    crs = "EPSG:4326",
+                    )
             frames.append(df)
+
     print("Took", time.time()-stime, "to make", len(frames), "GDF frames")
 
 gdf = gpd.GeoDataFrame(pd.concat(frames, ignore_index=True))
