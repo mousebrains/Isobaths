@@ -5,35 +5,14 @@
 # Jan-2022, Pat Welch, pat@mousebrains
 
 from argparse import ArgumentParser
-import numpy as np
-import pandas as pd
 import xarray as xr
 import geopandas as gpd
-from shapely.geometry import LineString
+import pandas as pd
 import matplotlib.pyplot as plt
 import time
-import sys
-
-def mkLevels(contours:tuple[str]) -> np.array:
-    levels = []
-    for contour in contours:
-        for level in contour.split(","):
-            try:
-                levels.append(int(level))
-            except Exception as e:
-                print("Unable to convert", level, "to a floating point number")
-                print(str(e))
-                sys.exit(1)
-    return np.array(sorted(levels))
-
-def pruneData(elevation:xr.DataArray, latkey,latmin,latmax, lonkey,lonmin,lonmax) -> xr.DataArray:
-    if latmin is None and latmax is None:
-        if lonmin is None and lonmax is None: return elevation
-        return elevation.sel({lonkey: slice(lonmin, lonmax)})
-    elif lonmin is None and lonmax is None:
-        if latmin is None and latmax is None: return elevation
-        return elevation.sel({latkey: slice(latmin, latmax)})
-    return elevation.sel({latkey: slice(latmin, latmax), lonkey: slice(lonmin, lonmax)})
+from mkLevels import mkLevels
+from pruneData import pruneData
+from mkGeoPandaFrames import mkGeoPandaFrames
 
 parser = ArgumentParser()
 parser.add_argument("--nc", type=str, required=True, help="NetCDF data source from GEBCO")
@@ -47,10 +26,7 @@ parser.add_argument("--contour", type=str, action="append",
 parser.add_argument("--plot", action="store_true", help="Generate plot")
 args = parser.parse_args()
 
-if args.contour is None:
-    levels = np.array([10, 20, 50, 100, 200, 500, 1000, 2000])
-else:
-    levels = mkLevels(args.contour)
+levels = mkLevels(args.contour)
 
 stime = time.time()
 frames = []
@@ -62,6 +38,7 @@ with xr.open_dataset(args.nc) as ds: # Get the data
     stime = time.time()
     b = xr.plot.contour(depth, levels=levels) # Make the contours
     print("Took", time.time()-stime, "to make contours")
+
     if args.plot:
         plt.grid(True)
         plt.xlabel("Longitude (deg)")
@@ -69,18 +46,7 @@ with xr.open_dataset(args.nc) as ds: # Get the data
         plt.show()
 
     stime = time.time()
-    for index in range(b.levels.size):
-        level = int(round(b.levels[index]))
-        segs = b.allsegs[index]
-        print("Level", level, len(segs))
-        for seg in segs:
-            if seg.shape[0] == 0: continue
-            df = gpd.GeoDataFrame(
-                    data={"Depth": [level], "geometry": LineString(seg)},
-                    crs = "EPSG:4326",
-                    )
-            frames.append(df)
-
+    frames = mkGeoPandaFrames(b)
     print("Took", time.time()-stime, "to make", len(frames), "GDF frames")
 
 gdf = gpd.GeoDataFrame(pd.concat(frames, ignore_index=True))
