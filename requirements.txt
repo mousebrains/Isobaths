@@ -15,4 +15,4 @@ shapely>=2.0         # 2.1.2
 matplotlib>=3.8      # 3.11.0
 netcdf4>=1.6         # 1.7.4  (reading GEBCO/NOAA .nc)
 h5netcdf>=1.1        # 1.8.1  (only needed by palau.mat.2.nc.py)
-pytest>=7.0          # 9.1.1  (tests only)
+pytest>=9.1.1          # 9.1.1  (tests only)
