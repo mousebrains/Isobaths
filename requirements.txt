@@ -2,7 +2,7 @@
 #
 # Version floors reflect the APIs this code relies on:
 #   - shapely >= 2.0   (geometries are treated as scalars, not iterables)
-#   - matplotlib >= 3.8 (QuadContourSet.levels / .allsegs interface)
+#   - matplotlib >= 3.11.0 (QuadContourSet.levels / .allsegs interface)
 #   - xarray/geopandas moderns for drop_vars, GeoDataFrame(crs=...), to_file
 #
 # Tested with the versions noted in the comments (Python 3.13).
