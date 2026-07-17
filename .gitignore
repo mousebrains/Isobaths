@@ -1,8 +1,20 @@
 .*.swp
 .*~
 *~
+
 *.shp
 *.shx
 *.cpg
 *.dbf
+*.prj
 *.nc
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+scratch/
+shapefiles/
+
+# small real-data CI fixtures are tracked despite the *.nc rule above
+!tests/data/
+!tests/data/*.nc

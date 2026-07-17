@@ -1,0 +1,5 @@
+# Development tooling.  Install with:  pip install -r requirements-dev.txt
+-r requirements.txt
+
+ruff==0.15.22      # pinned to match .pre-commit-config.yaml and CI
+pre-commit>=3.5
