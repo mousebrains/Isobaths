@@ -10,6 +10,12 @@ updates:
     groups:
       github-actions:
         patterns: ["*"]
+    # Only surface major bumps (e.g. v7 -> v8); patch/minor churn is noise.
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-patch"
+          - "version-update:semver-minor"
 
   - package-ecosystem: pip
     directory: "/"
@@ -23,3 +29,11 @@ updates:
     groups:
       python-deps:
         patterns: ["*"]
+    # Only surface major bumps (e.g. 3.x -> 4.x); patch/minor churn is noise.
+    # Floors in requirements.txt track the minor series, so this leaves them
+    # quiet until a genuinely new major release lands.
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-patch"
+          - "version-update:semver-minor"
