@@ -1,18 +1,18 @@
 # Runtime and test dependencies for Isobaths.
 #
-# Version floors reflect the APIs this code relies on:
-#   - shapely >= 2.0   (geometries are treated as scalars, not iterables)
-#   - matplotlib >= 3.8 (QuadContourSet.levels / .allsegs interface)
-#   - xarray/geopandas moderns for drop_vars, GeoDataFrame(crs=...), to_file
-#
-# Tested with the versions noted in the comments (Python 3.13).
+# Minimum versions are pinned to the current tested releases (developed on
+# Python 3.13). Requires Python 3.12+ (numpy 2.5 dropped 3.11).
+# The modern APIs this code relies on, and where they landed:
+#   - shapely 2.0        geometries treated as scalars, not iterables
+#   - matplotlib 3.8     QuadContourSet.levels / .allsegs interface
+#   - xarray / geopandas moderns for drop_vars, GeoDataFrame(crs=...), to_file
 
-numpy>=1.24          # 2.5.1
-xarray>=2023.1       # 2026.7.0
-pandas>=2.0          # 3.0.3
-geopandas>=0.13      # 1.1.4
-shapely>=2.0         # 2.1.2
-matplotlib>=3.8      # 3.11.0
-netcdf4>=1.6         # 1.7.4  (reading GEBCO/NOAA .nc)
-h5netcdf>=1.1        # 1.8.1  (only needed by palau.mat.2.nc.py)
-pytest>=7.0          # 9.1.1  (tests only)
+numpy>=2.5.1
+xarray>=2026.7.0
+pandas>=3.0.3
+geopandas>=1.1.4
+shapely>=2.1.2
+matplotlib>=3.11.0
+netcdf4>=1.7.4        # reading GEBCO/NOAA .nc
+h5netcdf>=1.8.1       # only needed by palau.mat.2.nc.py
+pytest>=9.1.1         # tests only

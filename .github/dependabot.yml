@@ -6,6 +6,10 @@ updates:
       interval: weekly
     commit-message:
       prefix: "ci"
+    # Roll all action bumps into a single weekly PR.
+    groups:
+      github-actions:
+        patterns: ["*"]
 
   - package-ecosystem: pip
     directory: "/"
@@ -13,3 +17,9 @@ updates:
       interval: weekly
     commit-message:
       prefix: "deps"
+    open-pull-requests-limit: 5
+    # Roll all Python dependency bumps into a single weekly PR instead of
+    # one-per-package (keeps this personal repo current without the noise).
+    groups:
+      python-deps:
+        patterns: ["*"]
