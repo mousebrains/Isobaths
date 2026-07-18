@@ -6,16 +6,11 @@ updates:
       interval: weekly
     commit-message:
       prefix: "ci"
-    # Roll all action bumps into a single weekly PR.
+    # Actions are pinned to a major tag (@v7), so Dependabot only proposes
+    # major bumps (v7 -> v8); group them into a single PR when they land.
     groups:
       github-actions:
         patterns: ["*"]
-    # Only surface major bumps (e.g. v7 -> v8); patch/minor churn is noise.
-    ignore:
-      - dependency-name: "*"
-        update-types:
-          - "version-update:semver-patch"
-          - "version-update:semver-minor"
 
   - package-ecosystem: pip
     directory: "/"
@@ -23,17 +18,11 @@ updates:
       interval: weekly
     commit-message:
       prefix: "deps"
-    open-pull-requests-limit: 5
-    # Roll all Python dependency bumps into a single weekly PR instead of
-    # one-per-package (keeps this personal repo current without the noise).
-    groups:
-      python-deps:
-        patterns: ["*"]
-    # Only surface major bumps (e.g. 3.x -> 4.x); patch/minor churn is noise.
-    # Floors in requirements.txt track the minor series, so this leaves them
-    # quiet until a genuinely new major release lands.
-    ignore:
-      - dependency-name: "*"
-        update-types:
-          - "version-update:semver-patch"
-          - "version-update:semver-minor"
+    # Disable routine version-update PRs. The requirements*.txt floors are
+    # deliberate minimums (>= the current minor series). Dependabot cannot be
+    # told to leave a ">=" floor alone -- it re-tightens the lower bound to the
+    # latest patch, and "ignore: update-types" does not apply to lower-bound
+    # bumps of range requirements -- so we turn routine version updates off and
+    # bump dependencies by hand. Security-update PRs are NOT affected by this
+    # limit (enable Dependabot security updates in repo settings for those).
+    open-pull-requests-limit: 0
